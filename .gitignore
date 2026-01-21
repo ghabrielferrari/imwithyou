@@ -1,0 +1,16 @@
+# Xcode
+.DS_Store
+*.xcuserdata
+*.xccheckout
+*.xcscmblueprint
+DerivedData/
+.build/
+*.ipa
+*.dSYM.zip
+*.dSYM
+
+# SwiftPM
+.swiftpm/
+
+# macOS
+*.swp
