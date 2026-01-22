@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		694218432F225098007383E0 /* ambient.wav in Resources */ = {isa = PBXBuildFile; fileRef = 694218422F225098007383E0 /* ambient.wav */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		694217FE2F20F961007383E0 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -27,6 +31,7 @@
 		694217F02F20F960007383E0 /* ImWithYou.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ImWithYou.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		694217FD2F20F961007383E0 /* ImWithYouTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ImWithYouTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		694218072F20F961007383E0 /* ImWithYouUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ImWithYouUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		694218422F225098007383E0 /* ambient.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; path = ambient.wav; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -79,6 +84,7 @@
 				694218002F20F961007383E0 /* ImWithYouTests */,
 				6942180A2F20F961007383E0 /* ImWithYouUITests */,
 				694217F12F20F960007383E0 /* Products */,
+				694218422F225098007383E0 /* ambient.wav */,
 			);
 			sourceTree = "<group>";
 		};
@@ -212,6 +218,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				694218432F225098007383E0 /* ambient.wav in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

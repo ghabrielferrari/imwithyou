@@ -9,7 +9,7 @@ import SwiftUI
 
 struct ExperienceView: View {
     @StateObject private var vm = ExperienceViewModel()
-    @State private var isDebugSheetPresented = false
+    @State private var showDebug = false
 
     var body: some View {
         VStack {
@@ -21,50 +21,72 @@ struct ExperienceView: View {
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 24)
                     .foregroundStyle(.white.opacity(0.35))
-                    .transition(.opacity)
             }
 
             Spacer()
 
-            // botao temporário apenas para MVP funcional
-            Button("Continuar") { vm.next() }
+            if !vm.isAutoFlowEnabled {
+                Button("Continuar") {
+                    vm.next()
+                }
                 .buttonStyle(.borderedProminent)
                 .padding(.bottom, 12)
+            }
         }
         .padding()
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(background)
         .animation(.easeInOut(duration: 0.6), value: vm.state)
-        .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
-                if vm.isDebugEnabled {
-                    Button("Debug") { isDebugSheetPresented = true }
-                }
-            }
+        .onAppear {
+            vm.startAutoFlowIfNeeded()
         }
-        .sheet(isPresented: $isDebugSheetPresented) {
+        .onDisappear {
+            vm.stopAutoFlow()
+        }
+        .onChange(of: vm.isAutoFlowEnabled) {
+            vm.startAutoFlowIfNeeded()
+        }
+        .sheet(isPresented: $showDebug) {
             DebugPanel(
                 state: vm.state,
                 onPickState: { vm.setState($0) },
                 onReset: { vm.reset() },
-                isDebugEnabled: $vm.isDebugEnabled
+                isDebugEnabled: $vm.isDebugEnabled,
+                isAutoFlowEnabled: $vm.isAutoFlowEnabled
             )
-            .presentationDetents([.medium])
+        }
+        .toolbar {
+            if vm.isDebugEnabled {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Debug") {
+                        showDebug = true
+                    }
+                }
+            }
         }
         .onTapGesture(count: 3) {
-            // gesto discreto: triplo toque alterna debug (nao aparece para o usuario final)
             vm.isDebugEnabled.toggle()
         }
     }
 
     private var background: some View {
         RadialGradient(
-            colors: GradientPalette.colors(for: vm.state),
+            colors: gradientColors,
             center: .top,
             startRadius: 40,
             endRadius: 900
         )
         .ignoresSafeArea()
+    }
+
+    private var gradientColors: [Color] {
+        switch vm.state {
+        case .a: return [Color(.systemGray5), Color(.systemGray)]
+        case .b: return [Color(.systemGray4), Color(.systemGray2)]
+        case .c: return [Color(.systemGray3), Color(.systemGray4)]
+        case .d: return [Color(.systemGray4), Color(.systemGray)]
+        case .e: return [Color(.systemGray4), Color(.systemGray2)]
+        }
     }
 }
 
@@ -73,22 +95,31 @@ private struct DebugPanel: View {
     let onPickState: (ExperienceViewModel.State) -> Void
     let onReset: () -> Void
     @Binding var isDebugEnabled: Bool
+    @Binding var isAutoFlowEnabled: Bool
 
     var body: some View {
         NavigationStack {
             Form {
                 Section("Estado atual") {
-                    Text(String(describing: state).uppercased())
+                    Text(label(for: state))
                 }
 
                 Section("Ir para") {
                     ForEach(ExperienceViewModel.State.allCases, id: \.self) { s in
-                        Button(s.label) { onPickState(s) }
+                        Button(label(for: s)) {
+                            onPickState(s)
+                        }
                     }
                 }
 
+                Section("Fluxo") {
+                    Toggle("Auto Flow", isOn: $isAutoFlowEnabled)
+                }
+
                 Section {
-                    Button("Recomeçar") { onReset() }
+                    Button("Recomeçar") {
+                        onReset()
+                    }
                 }
 
                 Section {
@@ -98,28 +129,14 @@ private struct DebugPanel: View {
             .navigationTitle("Debug")
         }
     }
-}
 
-private extension ExperienceViewModel.State {
-    var label: String {
-        switch self {
+    private func label(for state: ExperienceViewModel.State) -> String {
+        switch state {
         case .a: return "A — Presença"
         case .b: return "B — Travessia"
         case .c: return "C — Abrigo"
         case .d: return "D — Abrigo Firme"
         case .e: return "E — Abrigo Respirando"
-        }
-    }
-}
-
-private enum GradientPalette {
-    static func colors(for state: ExperienceViewModel.State) -> [Color] {
-        switch state {
-        case .a: return [Color(.systemGray5), Color(.systemGray)]
-        case .b: return [Color(.systemGray4), Color(.systemGray2)]
-        case .c: return [Color(.systemGray3), Color(.systemGray4)]
-        case .d: return [Color(.systemGray4), Color(.systemGray)]
-        case .e: return [Color(.systemGray4), Color(.systemGray2)]
         }
     }
 }
