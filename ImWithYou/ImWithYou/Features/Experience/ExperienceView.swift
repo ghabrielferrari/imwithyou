@@ -24,27 +24,19 @@ struct ExperienceView: View {
             }
 
             Spacer()
-
-            if !vm.isAutoFlowEnabled {
-                Button("Continuar") {
-                    vm.next()
-                }
-                .buttonStyle(.borderedProminent)
-                .padding(.bottom, 12)
-            }
         }
         .padding()
         .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(background)
         .animation(.easeInOut(duration: 0.6), value: vm.state)
-        .onAppear {
-            vm.startAutoFlowIfNeeded()
-        }
-        .onDisappear {
-            vm.stopAutoFlow()
-        }
+        .onAppear { vm.startAutoFlowIfNeeded() }
+        .onDisappear { vm.stopAutoFlow() }
         .onChange(of: vm.isAutoFlowEnabled) {
-            vm.startAutoFlowIfNeeded()
+            if vm.isAutoFlowEnabled {
+                vm.startAutoFlowIfNeeded()
+            } else {
+                vm.stopAutoFlow()
+            }
         }
         .sheet(isPresented: $showDebug) {
             DebugPanel(
@@ -58,9 +50,7 @@ struct ExperienceView: View {
         .toolbar {
             if vm.isDebugEnabled {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button("Debug") {
-                        showDebug = true
-                    }
+                    Button("Debug") { showDebug = true }
                 }
             }
         }
@@ -117,9 +107,7 @@ private struct DebugPanel: View {
                 }
 
                 Section {
-                    Button("Recomeçar") {
-                        onReset()
-                    }
+                    Button("Recomeçar") { onReset() }
                 }
 
                 Section {

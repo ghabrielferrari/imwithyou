@@ -48,21 +48,25 @@ final class ExperienceViewModel: ObservableObject {
             guard let self else { return }
 
             while !Task.isCancelled {
-                if self.state == .e { break }
-
                 let delay: UInt64
                 switch self.state {
                 case .a: delay = 3_000_000_000
                 case .b: delay = 2_500_000_000
                 case .c: delay = 2_500_000_000
                 case .d: delay = 2_000_000_000
-                case .e: delay = 0
+                case .e: delay = 8_000_000_000   // tempo de “respirar” antes de reiniciar
                 }
 
                 try? await Task.sleep(nanoseconds: delay)
                 if Task.isCancelled { break }
 
-                self.next() // já chama updateAudio()
+                if self.state == .e {
+                    self.state = .a
+                    self.updateAudio()
+                    continue
+                }
+
+                self.next() // chama updateAudio()
             }
 
             self.flowTask = nil
